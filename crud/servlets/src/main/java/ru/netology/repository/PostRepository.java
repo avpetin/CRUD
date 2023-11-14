@@ -12,7 +12,7 @@ public class PostRepository {
   private final ConcurrentMap<Long, Post> postMap = new ConcurrentHashMap<>();
   private long postId;
   public List<Post> all() {
-    return postMap.values().parallelStream().toList();
+    return postMap.values().stream().toList();
   }
 
   public Optional<Post> getById(long id) {
