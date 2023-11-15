@@ -6,11 +6,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 // Stub
 public class PostRepository {
   private final ConcurrentMap<Long, Post> postMap = new ConcurrentHashMap<>();
-  private long postId;
+  private final AtomicLong postId = new AtomicLong(0);
   public List<Post> all() {
     return postMap.values().stream().toList();
   }
@@ -21,15 +22,15 @@ public class PostRepository {
 
   public Post save(Post post) {
     if(post.getId() == 0){
-      post.setId(++postId);
-      postMap.put(postId, post);
+      post.setId(postId.addAndGet(1));
+      postMap.put(postId.longValue(), post);
     }
     else{
       if(getById(post.getId()).isPresent()) {
         postMap.replace(post.getId(), post);
       }
       else{
-        postMap.put(postId, post);
+        postMap.put(postId.longValue(), post);
       }
     }
     return post;

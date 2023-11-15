@@ -9,3 +9,17 @@ Content-Type: application/json
   "id": 0,
   "content": "Last Post"
 }
+
+###
+
+POST http://localhost:8080/api/posts
+Content-Type: application/json
+
+{
+  "id": 2,
+  "content": "Next Post"
+}
+
+###
+
+DELETE http://localhost:8080/api/posts/1
