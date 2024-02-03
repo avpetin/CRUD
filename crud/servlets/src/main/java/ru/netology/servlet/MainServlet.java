@@ -1,13 +1,16 @@
 package ru.netology.servlet;
 
+import org.apache.catalina.core.ApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import ru.netology.controller.PostController;
-import ru.netology.repository.PostRepository;
-import ru.netology.service.PostService;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+@Configuration
 public class MainServlet extends HttpServlet {
   private PostController controller;
   private static String path;
@@ -18,14 +21,9 @@ public class MainServlet extends HttpServlet {
   private static final String QUERY = "/api/posts";
   private static final String DELIMITER = "/";
 
+  private ApplicationContext context;
   @Override
-  public void init() {
-    final var repository = new PostRepository();
-    final var service = new PostService(repository);
-    controller = new PostController(service);
-  }
-
-  @Override
+  @Bean
   protected void service(HttpServletRequest req, HttpServletResponse resp) {
     // если деплоились в root context, то достаточно этого
     try {
