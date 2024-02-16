@@ -1,52 +1,56 @@
 package ru.netology.servlet;
 
-import org.apache.catalina.core.ApplicationContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.netology.controller.PostController;
+import ru.netology.service.PostService;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@Configuration
 public class MainServlet extends HttpServlet {
   private PostController controller;
-  private static String path;
-  private static String method;
-  private static final String GET = "GET";
-  private static final String POST = "POST";
-  private static final String DELETE = "DELETE";
-  private static final String QUERY = "/api/posts";
-  private static final String DELIMITER = "/";
 
-  private ApplicationContext context;
   @Override
-  @Bean
+  public void init() {
+    // отдаём список пакетов, в которых нужно искать аннотированные классы
+    final var context = new AnnotationConfigApplicationContext("ru.netology");
+
+    // получаем по имени бина
+    final var controllerBean = context.getBean("postController");
+
+    // получаем по классу бина
+    final var service = context.getBean(PostService.class);
+
+    // по умолчанию создаётся лишь один объект на BeanDefinition
+    final var isSame = service == context.getBean("postService");
+    controller = (PostController) controllerBean;
+  }
+
+  @Override
   protected void service(HttpServletRequest req, HttpServletResponse resp) {
     // если деплоились в root context, то достаточно этого
     try {
-      path = req.getRequestURI();
-      method = req.getMethod();
+      final var path = req.getRequestURI();
+      final var method = req.getMethod();
       // primitive routing
-      if (method.equals(GET) && path.equals(QUERY)) {
+      if (method.equals("GET") && path.equals("/api/posts")) {
         controller.all(resp);
         return;
       }
-      if (method.equals(GET) && path.matches("/api/posts/\\d+")) {
+      if (method.equals("GET") && path.matches("/api/posts/\\d+")) {
         // easy way
-        final var id = Long.parseLong(path.substring(path.lastIndexOf(DELIMITER)));
+        final var id = Long.parseLong(path.substring(path.lastIndexOf("/")));
         controller.getById(id, resp);
         return;
       }
-      if (method.equals(POST) && path.equals(QUERY)) {
+      if (method.equals("POST") && path.equals("/api/posts")) {
         controller.save(req.getReader(), resp);
         return;
       }
-      if (method.equals(DELETE) && path.matches("/api/posts/\\d+")) {
+      if (method.equals("DELETE") && path.matches("/api/posts/\\d+")) {
         // easy way
-        final var id = Long.parseLong(path.substring(path.lastIndexOf(DELIMITER) + 1));
+        final var id = Long.parseLong(path.substring(path.lastIndexOf("/")));
         controller.removeById(id, resp);
         return;
       }

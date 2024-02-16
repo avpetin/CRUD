@@ -4,8 +4,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import ru.netology.controller.PostController;
 import ru.netology.repository.PostRepository;
+import ru.netology.repository.PostRepositoryImpl;
 import ru.netology.service.PostService;
-import ru.netology.servlet.MainServlet;
 
 @Configuration
 public class JavaConfig {
@@ -18,16 +18,11 @@ public class JavaConfig {
 
     @Bean
     public PostService postService(PostRepository repository) {
-        return new PostService(repository);
+        return new PostService((PostRepositoryImpl) repository);
     }
 
     @Bean
     public PostRepository postRepository() {
-        return new PostRepository();
-    }
-
-    @Bean
-    public MainServlet mainServlet() {
-        return new MainServlet();
+        return new PostRepositoryImpl();
     }
 }
