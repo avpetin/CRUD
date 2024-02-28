@@ -28,12 +28,7 @@ public class MainServlet extends HttpServlet {
 
         // получаем по имени бина
         final var controller = context.getBean("postController");
-
-        // получаем по классу бина
-        final var service = context.getBean(PostService.class);
-
-        // по умолчанию создаётся лишь один объект на BeanDefinition
-        final var isSame = service == context.getBean("postService");
+        controller = (PostController)controller;
     }
 
     @Override
